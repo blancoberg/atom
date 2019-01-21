@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+
+
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TweenLite.min.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/easing/EasePack.min.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/plugins/CSSPlugin.min.js"></script>
+
+		<script src="js/three.min.js"></script>
+
+		<script type="text/javascript" src="js/SoundManager.js"></script>
+		<script type="text/javascript" src="js/RangeSlider.js"></script>
+
+		<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+		<link href="css/style.css" rel="stylesheet">
+		<link href="css/dat.gui.css" rel="stylesheet">
+
+
+
+
+		<title>Atom animation</title>
+		<meta name="description" content="Atom animation playground" />
+
+		<!-- Twitter Card data -->
+		<meta name="twitter:card" value="summary">
+
+		<!-- Open Graph data -->
+		<meta property="og:title" content="Atom animation" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="http://www.blancoberg.com/atom" />
+		<meta property="og:image" content="http://www.blancoberg.com/atom/img/facebook.png" />
+		<meta property="og:description" content="Atom animation playground" />
+
+
+	</head>
+
+	<body>
+
+		<div id="root">
+			<div id="controls">
+				<!--<input id="range-amount" type="range" min="1" max="119" value="50" class="slider">-->
+			</div>
+
+
+			<div id="content">
+
+				<div id="card" class="card">
+					<h3>1</h3>
+					<h1>H</h1>
+					<p>Helium</p>
+					<p class="mini">3242</p>
+				</div>
+
+				<a target="_blank" href="https://en.wikipedia.org/wiki/">Read more about Uranium</a>
+			</div>
+
+
+
+			<div id="info">
+				<h2 class="info--h2">Atom</h2>
+				<p class="info--p">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			</div>
+
+			<div id="disclaimer">
+				<p>* Obviously not an scientifically accurate depiction of an atom.</p>
+
+			</div>
+
+			<!--
+			<img id="lensflare" src="img/lensflare-alpha.png" alt="">
+		-->
+			<button id="button-start" type="button" class="button" name="button">Start animation</button>
+		</div>
+
+
+
+
+		<script type="text/javascript">
+
+			var periodicTable=
+			 ["H", "Hydrogen", "1.00794", 1, 1,
+				"He", "Helium", "4.002602", 18, 1,
+				"Li", "Lithium", "6.941", 1, 2,
+				"Be", "Beryllium", "9.012182", 2, 2,
+				"B", "Boron", "10.811", 13, 2,
+				"C", "Carbon", "12.0107", 14, 2,
+				"N", "Nitrogen", "14.0067", 15, 2,
+				"O", "Oxygen", "15.9994", 16, 2,
+				"F", "Fluorine", "18.9984032", 17, 2,
+				"Ne", "Neon", "20.1797", 18, 2,
+				"Na", "Sodium", "22.98976...", 1, 3,
+				"Mg", "Magnesium", "24.305", 2, 3,
+				"Al", "Aluminium", "26.9815386", 13, 3,
+				"Si", "Silicon", "28.0855", 14, 3,
+				"P", "Phosphorus", "30.973762", 15, 3,
+				"S", "Sulfur", "32.065", 16, 3,
+				"Cl", "Chlorine", "35.453", 17, 3,
+				"Ar", "Argon", "39.948", 18, 3,
+				"K", "Potassium", "39.948", 1, 4,
+				"Ca", "Calcium", "40.078", 2, 4,
+				"Sc", "Scandium", "44.955912", 3, 4,
+				"Ti", "Titanium", "47.867", 4, 4,
+				"V", "Vanadium", "50.9415", 5, 4,
+				"Cr", "Chromium", "51.9961", 6, 4,
+				"Mn", "Manganese", "54.938045", 7, 4,
+				"Fe", "Iron", "55.845", 8, 4,
+				"Co", "Cobalt", "58.933195", 9, 4,
+				"Ni", "Nickel", "58.6934", 10, 4,
+				"Cu", "Copper", "63.546", 11, 4,
+				"Zn", "Zinc", "65.38", 12, 4,
+				"Ga", "Gallium", "69.723", 13, 4,
+				"Ge", "Germanium", "72.63", 14, 4,
+				"As", "Arsenic", "74.9216", 15, 4,
+				"Se", "Selenium", "78.96", 16, 4,
+				"Br", "Bromine", "79.904", 17, 4,
+				"Kr", "Krypton", "83.798", 18, 4,
+				"Rb", "Rubidium", "85.4678", 1, 5,
+				"Sr", "Strontium", "87.62", 2, 5,
+				"Y", "Yttrium", "88.90585", 3, 5,
+				"Zr", "Zirconium", "91.224", 4, 5,
+				"Nb", "Niobium", "92.90628", 5, 5,
+				"Mo", "Molybdenum", "95.96", 6, 5,
+				"Tc", "Technetium", "(98)", 7, 5,
+				"Ru", "Ruthenium", "101.07", 8, 5,
+				"Rh", "Rhodium", "102.9055", 9, 5,
+				"Pd", "Palladium", "106.42", 10, 5,
+				"Ag", "Silver", "107.8682", 11, 5,
+				"Cd", "Cadmium", "112.411", 12, 5,
+				"In", "Indium", "114.818", 13, 5,
+				"Sn", "Tin", "118.71", 14, 5,
+				"Sb", "Antimony", "121.76", 15, 5,
+				"Te", "Tellurium", "127.6", 16, 5,
+				"I", "Iodine", "126.90447", 17, 5,
+				"Xe", "Xenon", "131.293", 18, 5,
+				"Cs", "Caesium", "132.9054", 1, 6,
+				"Ba", "Barium", "132.9054", 2, 6,
+				"La", "Lanthanum", "138.90547", 4, 9,
+				"Ce", "Cerium", "140.116", 5, 9,
+				"Pr", "Praseodymium", "140.90765", 6, 9,
+				"Nd", "Neodymium", "144.242", 7, 9,
+				"Pm", "Promethium", "(145)", 8, 9,
+				"Sm", "Samarium", "150.36", 9, 9,
+				"Eu", "Europium", "151.964", 10, 9,
+				"Gd", "Gadolinium", "157.25", 11, 9,
+				"Tb", "Terbium", "158.92535", 12, 9,
+				"Dy", "Dysprosium", "162.5", 13, 9,
+				"Ho", "Holmium", "164.93032", 14, 9,
+				"Er", "Erbium", "167.259", 15, 9,
+				"Tm", "Thulium", "168.93421", 16, 9,
+				"Yb", "Ytterbium", "173.054", 17, 9,
+				"Lu", "Lutetium", "174.9668", 18, 9,
+				"Hf", "Hafnium", "178.49", 4, 6,
+				"Ta", "Tantalum", "180.94788", 5, 6,
+				"W", "Tungsten", "183.84", 6, 6,
+				"Re", "Rhenium", "186.207", 7, 6,
+				"Os", "Osmium", "190.23", 8, 6,
+				"Ir", "Iridium", "192.217", 9, 6,
+				"Pt", "Platinum", "195.084", 10, 6,
+				"Au", "Gold", "196.966569", 11, 6,
+				"Hg", "Mercury", "200.59", 12, 6,
+				"Tl", "Thallium", "204.3833", 13, 6,
+				"Pb", "Lead", "207.2", 14, 6,
+				"Bi", "Bismuth", "208.9804", 15, 6,
+				"Po", "Polonium", "(209)", 16, 6,
+				"At", "Astatine", "(210)", 17, 6,
+				"Rn", "Radon", "(222)", 18, 6,
+				"Fr", "Francium", "(223)", 1, 7,
+				"Ra", "Radium", "(226)", 2, 7,
+				"Ac", "Actinium", "(227)", 4, 10,
+				"Th", "Thorium", "232.03806", 5, 10,
+				"Pa", "Protactinium", "231.0588", 6, 10,
+				"U", "Uranium", "238.02891", 7, 10,
+				"Np", "Neptunium", "(237)", 8, 10,
+				"Pu", "Plutonium", "(244)", 9, 10,
+				"Am", "Americium", "(243)", 10, 10,
+				"Cm", "Curium", "(247)", 11, 10,
+				"Bk", "Berkelium", "(247)", 12, 10,
+				"Cf", "Californium", "(251)", 13, 10,
+				"Es", "Einstenium", "(252)", 14, 10,
+				"Fm", "Fermium", "(257)", 15, 10,
+				"Md", "Mendelevium", "(258)", 16, 10,
+				"No", "Nobelium", "(259)", 17, 10,
+				"Lr", "Lawrencium", "(262)", 18, 10,
+				"Rf", "Rutherfordium", "(267)", 4, 7,
+				"Db", "Dubnium", "(268)", 5, 7,
+				"Sg", "Seaborgium", "(271)", 6, 7,
+				"Bh", "Bohrium", "(272)", 7, 7,
+				"Hs", "Hassium", "(270)", 8, 7,
+				"Mt", "Meitnerium", "(276)", 9, 7,
+				"Ds", "Darmstadium", "(281)", 10, 7,
+				"Rg", "Roentgenium", "(280)", 11, 7,
+				"Cn", "Copernicium", "(285)", 12, 7,
+				"Uut", "Unutrium", "(284)", 13, 7,
+				"Fl", "Flerovium", "(289)", 14, 7,
+				"Uup", "Ununpentium", "(288)", 15, 7,
+				"Lv", "Livermorium", "(293)", 16, 7,
+				"Uus", "Ununseptium", "(294)", 17, 7,
+				"Uuo", "Ununoctium", "(294)", 18, 7,
+				"Vb", "Vibranium ;)", "(301)", 18, 7
+			];
+
+
+		var counter = 0;
+		var counter2 = 0;
+		var scene = new THREE.Scene();
+		var camera = new THREE.PerspectiveCamera( 275, window.innerWidth / window.innerHeight, 0.1, 1000 );
+		var cameraZoom = 0.8;
+		var speed = 0.12;
+		var amountOfProtons = 4+Math.round(12 * Math.random());
+		var oldAmountOfProtons = -1;
+		var atom;
+		var isForming = 0;
+		var isFormingTarget = 0;
+		var renderer;
+		var fibonacci_positions;
+
+		renderer = new THREE.WebGLRenderer({ alpha: true });
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		document.body.appendChild( renderer.domElement );
+
+		//renderer.domElement.zIndex=-1;
+		var canvas = renderer.domElement;
+		canvas.style.position="absolute";
+		canvas.style.left="0px";
+		canvas.style.top="0px";
+		//canvas.style.zIndex=-1;
+		var randomCounter=5;
+
+		//var seed = 1;
+		function random(seed) {
+		    var x = Math.sin(seed) * 10000;
+		    return x - Math.floor(x);
+		}
+
+		function randomSeed(){
+			return (0.5 + Math.sin(121.123+22.3345*randomCounter)*0.5);
+		}
+
+		// atom holder //
+
+		var atom = new THREE.Group();
+		scene.add(atom);
+
+
+		var core = new THREE.Group()
+		atom.scale.x = 8;
+		atom.scale.y = 8;
+		atom.add( core );
+
+		//var geometry = new THREE.BoxGeometry( 0.5, 0.5, 0.5 );
+		var geometry = new THREE.SphereGeometry( 0.13, 8, 8 );
+		var material = new THREE.MeshPhongMaterial( { color: 0xffdb85, emissive: 0xffdb85, side: THREE.DoubleSide, flatShading: true } );
+		var electrons = [];
+		var protons = [];
+
+		////////////////////////////
+		// electrons //
+		///////////////////////////
+
+		var amount  =119+1;
+		for(var i = 0;i<amount;i++){
+
+			var cube = new THREE.Mesh( geometry, material );
+			//console.log(cube);
+
+			//core.add( cube );
+			cube.position.x = Math.random()*5;
+
+			if(i < 6){
+				var light = new THREE.PointLight( 0xffffff, 0.7, 525 );
+				light.position.set( 0, 0, 5 );
+				cube.add( light );
+			}
+
+
+			var proc = i/(amount);
+			electrons.push(
+				{
+				rotX:proc*Math.PI*2,
+				rotY:Math.random()*Math.PI*2,
+				rotZ:Math.random() * Math.PI*2,
+				x:11,
+				speed:0.1+0*Math.random(),
+				cube:cube
+			})
+
+		}
+
+		///////////////////////////
+		// protons && neutrons //
+		///////////////////////////
+
+
+
+		var geometry = new THREE.SphereGeometry( 0.8, 8, 8 );
+		var textureProton = new THREE.TextureLoader().load("img/texture_white.png");//THREE.ImageUtils.loadTexture("texture_white.png")
+		var textureNeutron = new THREE.TextureLoader().load("img/texture.png");//THREE.ImageUtils.loadTexture("texture_white.png")
+
+		var materialProton = new THREE.MeshLambertMaterial({ map: textureProton  });
+		var materialNeutron = new THREE.MeshLambertMaterial({ map: textureNeutron });
+		geometry.matrixAutoUpdate = true;
+
+
+
+		for(var i = 0;i<amount*2;i++){
+
+			var cube = new THREE.Object3D();
+			var cubeMesh = new THREE.Mesh( geometry, i%2 == 0 ? materialProton : materialNeutron );
+			cubeMesh.position.x = 0;
+			cube.add(cubeMesh);
+
+			var proc = i/(amount);
+			protons.push({cube:cube,mesh:cubeMesh});
+
+		}
+
+
+
+		camera.position.z = 20;
+		var rotX = 0,rotY = 0,rotZ = 0;
+
+
+
+		/*
+			**********************************
+			Lens flare
+			**********************************
+		*/
+
+		var lensFlare;
+		var lensFlareDark;
+
+		var lensflareSprite = new THREE.TextureLoader().load( "img/lensflare-alpha.png" );
+		var lenseMaterial = new THREE.SpriteMaterial( { map: lensflareSprite, color: 0xffffff } );
+		var lensflare = new THREE.Sprite( lenseMaterial );
+		lensflare.position.set( 0, 0, 0 );
+
+		atom.add( lensflare );
+
+
+		/*
+		************************
+		Light
+		************************
+		*/
+
+		var light = new THREE.PointLight( 0xffffff, 1, 600 );
+		light.position.set( 0, 50, 50 );
+		scene.add( light );
+
+		function rotateVector(vec,angle){
+        var x = vec.x * Math.cos(angle) - vec.y * Math.sin(angle);
+        var y = vec.x * Math.sin(angle) + vec.y * Math.cos(angle);
+        vec.x = x;
+				vec.y = y;
+    }
+
+
+		/*
+			**********************************
+			Mouse events
+			**********************************
+		*/
+
+		/*
+		window.addEventListener("resize",function(e){
+			if(window.innerWidth <= 700){
+				camera.position.y = -5;
+			}else{
+				camera.position.y = 0;
+			}
+		})
+		*/
+
+		window.addEventListener("mousedown",function(e){
+
+			if(soundsLoaded){
+				startSound();
+			}
+
+		})
+
+		window.addEventListener("touchstart",function(e){
+
+			if(soundsLoaded){
+				startSound();
+			}
+
+		})
+
+		window.addEventListener("click",function(e){
+			//amountOfProtons*=2;
+			var direction = e.deltaY > 0 ? 1 : 0;
+			console.log(direction)
+			//amountOfProtons = amountOfProtons> electrons.length-1 ? electrons.length-1 : amountOfProtons;
+			//updateProtons();
+		})
+
+		function onResize(){
+			camera.aspect = window.innerWidth / window.innerHeight;
+  		camera.updateProjectionMatrix();
+
+  		renderer.setSize( window.innerWidth, window.innerHeight );
+
+			if(window.innerWidth <= 700){
+				camera.position.y = -5;
+			}else{
+				camera.position.y = 0;
+			}
+		}
+
+		window.addEventListener("resize",onResize);
+
+
+		/*
+			**********************************
+			Fibonacci sphere algoritm
+			Position vectors evenly around a sphere
+			**********************************
+		*/
+
+		function fibonacci_sphere(samples=1, randomize=false){
+		    rnd = 1.
+		    if (randomize) {
+		        rnd = Math.random() * samples
+		    }
+		    var offset = 2./samples
+		    var increment = Math.PI * (3. - Math.sqrt(5.));
+		    return d3.range(samples)
+		    .map(function(i) {
+		        var y = ((i * offset) - 1) + (offset / 2),
+		            r = Math.sqrt(1 - Math.pow(y,2)),
+		            phi = ((i + rnd) % samples) * increment,
+		            x = Math.cos(phi) * r,
+		            z = Math.sin(phi) * r
+		        return([x,y,z])
+		    });
+		}
+
+
+		function animate() {
+
+			requestAnimationFrame( animate );
+			renderer.render( scene, camera );
+
+
+			soundManager.setVolume("slime",isForming * cameraZoom*0.3);
+			soundManager.setPitch("slime",-0.5 + 3*isForming);
+			isForming+=(0-isForming)*0.1;
+
+			var lensScale = amountOfProtons/1.5;
+			var lensAlpha = 0.1 + 0.1 * amountOfProtons/119;
+
+			lensflare.scale.set(15+lensScale,15+lensScale,15+lensScale);
+			lensflare.material.opacity = lensAlpha;
+			lensflare.material.rotation-=1 * speed * lensScale*0.003 + 0.01;
+
+
+
+			atom.scale.x+=(cameraZoom - atom.scale.x)*0.02;
+			atom.scale.y+=(cameraZoom - atom.scale.y)*0.02;
+
+			core.rotation.y+=(0.02 + amountOfProtons*0.0005) * speed * 10;
+
+			counter+=speed * electrons.length * 0.25;
+			core.position.x = -0.025 + 0.05*Math.sin(counter * amountOfProtons * 0.001);
+			core.position.y = -0.025 + 0.05*Math.sin(counter*1.1 * amountOfProtons * 0.001);
+
+
+			/*
+				**********************************
+				Animate electrons
+				**********************************
+			*/
+
+			for(var i = 0;i<electrons.length;i++){
+				var cube = electrons[i];
+
+				//cube.rotX+=speed*0.5;
+
+				var rotX = cube.rotX + counter * 0.015;
+
+				var r = cube.x+0.02*amountOfProtons;
+				var x = r * Math.cos(rotX) * Math.sin(cube.rotY);
+				var y = r * Math.sin(rotX);
+				var z = r * Math.cos(rotX) * Math.cos(cube.rotY);
+
+				var vector = {x:x,y:y,z:z};
+
+				rotateVector(vector,cube.rotZ);
+
+				cube.cube.position.set(vector.x,vector.y,vector.z);
+				//rotate(cube.cube,0,0,cube.rotX);
+			}
+
+
+			/*
+				**********************************
+				Position Protons and neutrons
+				**********************************
+			*/
+
+			var max = periodicTable.length/5*2;
+			if (!fibonacci_positions)
+				fibonacci_positions = fibonacci_sphere(max,false);
+
+			var ids = [];
+			for(var i = 0;i<max;i++){
+				ids.push({value:i,rnd:random(i*2)});
+			}
+			ids.sort(function(a, b){return a.rnd-b.rnd});
+
+
+			for(var i = 0;i<max;i++){
+				//protons[i].mesh.position.x+= ((1 + amountOfProtons*0.03) - protons[i].mesh.position.x)*0.1;
+				//var id = Math.round(119*2 * random(i))
+				var id = ids[i].value;
+
+
+					protons[i].cube.position.x += (fibonacci_positions[id][0]*(0.7 + amountOfProtons*0.04) * (1+  random(i+1)*0.1) - protons[i].cube.position.x)*0.1;
+					protons[i].cube.position.y += (fibonacci_positions[id][1]*(0.7 + amountOfProtons*0.04) * (1+  random(i+2)*0.1) - protons[i].cube.position.y)*0.1;
+					protons[i].cube.position.z += (fibonacci_positions[id][2]*(0.7 + amountOfProtons*0.04) * (1+ random(i+3)*0.1) - protons[i].cube.position.z)*0.1;
+
+
+
+
+			}
+
+
+		}
+
+		function updateHumSound(){
+
+			soundManager.setVolume("hum",0.1+amountOfProtons*0.02 * cameraZoom)
+			soundManager.setVolume("noise",amountOfProtons*0.0005 * cameraZoom)
+			soundManager.setPitch("hum",(1+amountOfProtons*0.006) * speed/0.18);
+			soundManager.setPitch("noise",(1-amountOfProtons*0.009) * speed/0.18);
+
+		}
+
+		function updateProtons(){
+
+
+
+			updateHumSound();
+
+
+			/*
+				**********************************
+				Update text
+				**********************************
+			*/
+
+			var card = document.getElementById("card");
+			var content = document.getElementById("content");
+
+			card.children[0].innerText = amountOfProtons;
+			card.children[1].innerText = periodicTable[(amountOfProtons-1)*5]
+			card.children[2].innerText = periodicTable[(amountOfProtons-1)*5+1]
+			card.children[3].innerText = periodicTable[(amountOfProtons-1)*5+2]
+
+			content.children[1].innerText = "Learn more about " + periodicTable[(amountOfProtons-1)*5+1]
+			content.children[1].setAttribute("href","https://en.wikipedia.org/wiki/" + periodicTable[(amountOfProtons-1)*5+1])
+			//https://en.wikipedia.org/wiki/
+
+
+			/*
+				**********************************
+				Add & remove protons/neutrons
+				**********************************
+			*/
+
+			for(var i = 0;i<electrons.length;i++){
+				if(i<amountOfProtons){
+					atom.add(electrons[i].cube);
+				}else{
+					//if(electrons[i].parent != null)
+						atom.remove(electrons[i].cube);
+				}
+
+			}
+
+
+			for(var i = 0;i<protons.length;i++){
+
+				if(i<amountOfProtons*2){
+
+					var targetScale = 1 + 0.005 * Math.min(protons.length,amountOfProtons);
+
+					if(protons[i].cube.parent == null){
+
+
+						TweenLite.killTweensOf(protons[i].mesh.scale);
+						isForming+=0.1;
+						isForming = isForming < 1 ? isForming : 1;
+						TweenLite.fromTo(protons[i].mesh.scale,0.7,{x:0.1,y:0.1,z:0.1},{delay:Math.random()*0.2,ease:Elastic.easeOut,x:targetScale,y:targetScale,z:targetScale})
+
+					}
+					else{
+
+					}
+					protons[i].removed=false;
+					core.add(protons[i].cube);
+
+
+				}else{
+
+					if(!protons[i].removed){
+
+						isForming+=0.1;
+						isForming = isForming < 1 ? isForming : 1;
+
+						TweenLite.killTweensOf(protons[i].mesh.scale);
+
+						TweenLite.to(protons[i].mesh.scale,0.2,{x:0.1,y:0.1,z:0.1,ease:Back.easeIn,delay:Math.random()*0.1,onComplete:function(e){
+							core.remove(e)
+						},onCompleteParams:[protons[i].cube]})
+					}
+
+					protons[i].removed = true;
+					//core.remove(protons[i]);
+				}
+
+
+			}
+
+
+		}
+
+
+		/*
+			**********************************
+			Initiate sound only once
+			**********************************
+		*/
+
+		function startSound(){
+
+			if(!soundsStarted){
+
+				soundManager.playSound("noise",true);
+				soundManager.playSound("slime",true);
+				soundManager.playSound("hum",true);
+				//soundManager.playSound("background",true,3);
+				//soundManager.setVolume("background",0.3);
+
+				soundsStarted=true;
+			}
+
+
+
+		}
+
+		var soundManager = new SoundManager();
+		var soundsLoaded = false;
+		var soundsStarted = false;
+
+		soundManager.onLoad = function(){
+			soundsLoaded = true;
+		}
+
+		soundManager.loadSounds([
+
+			{src:"sounds/Low_Hum_1.mp3",id:"hum",loop:true,html5:false},
+		//	{src:"sounds/stellardrone/Stellardrone - Light Years - 08 Ultra Deep Field.mp3",id:"background",loop:true},
+			{src:"sounds/interference.mp3",id:"noise",loop:true},
+			{src:"sounds/slime.mp3",id:"slime",loop:true}
+
+		])
+
+		/*
+			**********************************
+			Control sliders
+			**********************************
+		*/
+
+		var control = new RangeSlider(window,"amountOfProtons",1,119);
+		control.appendTo(document.getElementById("controls"))
+		control.text("Element");
+		control.onChange(function(e){
+			updateProtons();
+			updateHumSound();
+		})
+
+		var controlSpeed = new RangeSlider(window,"speed",0.01,0.50);
+		controlSpeed.step(0.01);
+		controlSpeed.text("Speed");
+		controlSpeed.appendTo(document.getElementById("controls"))
+		controlSpeed.onChange(function(e){
+			updateHumSound();
+
+		})
+
+
+		var controlZoom = new RangeSlider(window,"cameraZoom",0.1,3);
+		controlZoom.step(0.1);
+		//document.getElementById("controls").appendChild(control.dom);
+		controlZoom.appendTo(document.getElementById("controls"))
+		controlZoom.text("Zoom");
+		controlZoom.onChange(function(e){
+
+
+			updateHumSound();
+		})
+
+
+
+		/*
+			**********************************
+			Run animation
+			**********************************
+		*/
+
+		updateProtons();
+		animate();
+		onResize();
+    </script>
+
+
+
+	</body>
+
+</html>
